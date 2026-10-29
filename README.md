@@ -16,6 +16,10 @@ Teknoloji: C# / .NET 8 / Windows Forms / FFmpeg. Uygulama internet gerektirmeden
 
 ### Windows EXE indirme
 
+**Önerilen: Kurulumlu sürüm.** Başarılı GitHub Actions çalışmasında `TROCKI-Motion-Studio-PRO-Setup-Windows-x64` artifact'ini indir, ZIP'i aç ve `TROCKI-Motion-Studio-PRO-Setup.exe` programını çalıştır. Kurulum Başlat menüsü ve masaüstü kısayolu oluşturur. FFmpeg ayrıca kurulmalıdır.
+
+**Alternatif: Taşınabilir EXE.**
+
 1. GitHub deposundaki **Actions** sekmesine gir.
 2. Başarılı **Build Windows EXE** çalışmasını seç.
 3. **Artifacts → TROCKI-Motion-Studio-PRO-Windows-x64** dosyasını indir ve ZIP'i aç.
