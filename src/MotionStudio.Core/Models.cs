@@ -48,8 +48,8 @@ public sealed record VideoSettings
 
     public void Validate()
     {
-        if (SecondsPerImage < 1 || SecondsPerImage > 30)
-            throw new ArgumentOutOfRangeException(nameof(SecondsPerImage), "Görsel başına süre 1–30 saniye olmalı.");
+        if (SecondsPerImage < 0.5 || SecondsPerImage > 7200)
+            throw new ArgumentOutOfRangeException(nameof(SecondsPerImage), "Görsel başına süre 0,5–7200 saniye olmalı.");
         if (Fps is not (24 or 30 or 60))
             throw new ArgumentOutOfRangeException(nameof(Fps), "FPS 24, 30 veya 60 olmalı.");
     }
