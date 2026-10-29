@@ -1,4 +1,4 @@
-name: Build
+name: Build Windows EXE
 
 on:
   push:
@@ -13,12 +13,22 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
-      - name: Derle
+          dotnet-version: '8.0.x'
+      - name: Derle - CLI ve Core
         run: dotnet build TrockiMotionStudio.sln -c Release
-      - name: Yayın klasörü
-        run: dotnet publish src/MotionStudio.App/MotionStudio.App.csproj -c Release -r win-x64 --self-contained false -o publish
+      - name: Derle - Windows Forms PRO
+        run: dotnet build src/MotionStudio.App/MotionStudio.App.csproj -c Release
+      - name: Tek dosya Windows x64 EXE
+        run: dotnet publish src/MotionStudio.App/MotionStudio.App.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true -o publish
+      - name: EXE kontrolü
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "publish/TrockiMotionStudio.exe")) {
+            throw "TrockiMotionStudio.exe bulunamadı."
+          }
+          Get-Item "publish/TrockiMotionStudio.exe" | Select-Object Name,Length
       - uses: actions/upload-artifact@v4
         with:
-          name: TrockiMotionStudio-win-x64
-          path: publish
+          name: TROCKI-Motion-Studio-PRO-Windows-x64
+          path: publish/
+          if-no-files-found: error
