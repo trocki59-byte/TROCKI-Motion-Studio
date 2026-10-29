@@ -32,3 +32,18 @@ jobs:
           name: TROCKI-Motion-Studio-PRO-Windows-x64
           path: publish/
           if-no-files-found: error
+
+      - name: Windows Setup.exe ve masaüstü kısayolu
+        shell: pwsh
+        run: |
+          $compiler = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $compiler)) {
+            choco install innosetup -y --no-progress
+          }
+          & $compiler setup\installer.iss
+          if ($LASTEXITCODE -ne 0) { throw "Inno Setup derlemesi başarısız." }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TROCKI-Motion-Studio-PRO-Setup-Windows-x64
+          path: installer-output/*.exe
+          if-no-files-found: error
