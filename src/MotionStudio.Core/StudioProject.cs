@@ -16,6 +16,7 @@ public sealed record StudioClip
 public sealed record StudioProject
 {
     public List<StudioClip> Clips { get; init; } = new();
+    public string NarrationText { get; init; } = "";
     public string? MusicPath { get; init; }
     public string? NarrationPath { get; init; }
     public double MusicVolume { get; init; } = 0.20;
