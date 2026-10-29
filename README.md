@@ -1,76 +1,81 @@
-# TROÇKİ Motion Studio
+# TROÇKİ Motion Studio PRO 🎬
 
-Görsellerden sinematik videolar üreten masaüstü video stüdyosu.
+**Windows masaüstünde fotoğraflar, videolar, seslendirme ve müziği tek MP4 filmde birleştiren stüdyo.**
 
-- **Teknoloji:** C# · .NET 8 · Windows Forms · FFmpeg
-- **Özellikler:** Çoklu görsel seçimi ve önizleme, Zoom In/Out, dört yönlü Pan, sinematik Zoom + Pan, hız ayarı, fade geçişi, 16:9 / 9:16 / 1:1 oranları, 24/30/60 FPS, tek MP4 çıktısı (H.264)
+Teknoloji: C# / .NET 8 / Windows Forms / FFmpeg. Uygulama internet gerektirmeden çalışır; seslendirme Windows'un yerel konuşma seslerini kullanır.
+
+## PRO özellikleri
+
+- Fotoğraf ve videoyu **sahneler halinde ekleme, silme ve ↑↓ ile yeniden sıralama**.
+- Videoyu **başlangıç saniyesi ve sahne süresi** ile kırpma; hareketli fotoğraf için Zoom/Pan.
+- Seslendirme metnini yazıp/yapıştırıp Windows sesleriyle WAV üretme.
+- Ayrı **müzik** ve **seslendirme** kanalları, ses seviyesi ayarları.
+- 16:9 (YouTube), 9:16 (Shorts/Reels), 1:1 ve 24/30/60 FPS.
+- JSON proje açma/kaydetme, ilerleme ve iptal.
+- MP4 (H.264 + varsa AAC ses) dışa aktarma.
+
+### Windows EXE indirme
+
+**Önerilen: Kurulumlu sürüm.** Başarılı GitHub Actions çalışmasında `TROCKI-Motion-Studio-PRO-Setup-Windows-x64` artifact'ini indir, ZIP'i aç ve `TROCKI-Motion-Studio-PRO-Setup.exe` programını çalıştır. Kurulum Başlat menüsü ve masaüstü kısayolu oluşturur. FFmpeg ayrıca kurulmalıdır.
+
+**Alternatif: Taşınabilir EXE.**
+
+1. GitHub deposundaki **Actions** sekmesine gir.
+2. Başarılı **Build Windows EXE** çalışmasını seç.
+3. **Artifacts → TROCKI-Motion-Studio-PRO-Windows-x64** dosyasını indir ve ZIP'i aç.
+4. İçindeki **TrockiMotionStudio.exe** dosyasını çalıştır.
+5. Masaüstüne kısayol oluşturmak için EXE'ye sağ tıkla → **Gönder → Masaüstü (kısayol oluştur)**.
+
+Derleme *self-contained* tek dosya olarak yayınlanır: bilgisayara ayrıca .NET Runtime yükleme zorunluluğu yoktur.
+**FFmpeg farklı bir uygulamadır ve henüz EXE içine gömülmemiştir**. Video üretimi için:
+- Windows için FFmpeg'i https://www.gyan.dev/ffmpeg/builds/ adresinden edin.
+- \`ffmpeg.exe\` dosyasını EXE'nin yanındaki \`ffmpeg\` klasörüne koy **veya** FFmpeg \`bin\` klasörünü PATH'e ekle.
+
+> FFmpeg yoksa program açılır ama MP4 oluşturulamaz. Kullandığınız FFmpeg dağıtımının lisans koşullarına uyun.
+
+### Seslendirme
+
+1. **Metin → Seslendirme** sekmesinde metni yaz.
+2. **Sesleri Listele** ile Windows'taki SAPI seslerini gör.
+3. Türkçe ses yüklüyse onu seç, konuşma hızını belirle.
+4. **Metni WAV Olarak Seslendir** ile konuşmayı üret.
+5. Oluşan WAV, **Ses / Proje ve MP4** sekmesindeki seslendirme kanalına otomatik eklenir.
+
+Yalnızca Windows'un klasik **SAPI / System.Speech** sesleri listelenir. Türkçe ses yoksa Windows'a uyumlu Türkçe konuşma sesi kurulması gerekir. Windows "OneCore" seslerinin tamamı klasik SAPI uygulamalarına görünmeyebilir. TTS bulut servisi veya yapay zekâ ses klonlaması değildir.
+
+### MP4 düzenleme adımları
+
+1. **Video Düzenleme** sekmesinde fotoğraf ve videoları ekle, sırala.
+2. Bir sahneye tıkla: süreyi, video ise başlangıcını, fotoğraf ise hareket tipini ayarla ve **Uygula**.
+3. **Ses, Proje ve MP4** sekmesinden arka plan müziği ekle; varsa ürettiğin WAV'ı ekle.
+4. Video oranı ve FPS'i seç; **MP4 FİLMİ OLUŞTUR** düğmesine bas.
+
+Uzun tarih anlatıları için sahnelere yüzlerce saniye süre tanımlayabilirsin. Büyük videoların işlenmesi uzun sürebilir.
+
+## Kaynak ve derleme
+
+\`\`\`powershell
+dotnet build src/MotionStudio.App/MotionStudio.App.csproj -c Release
+dotnet run --project src/MotionStudio.App
+dotnet publish src/MotionStudio.App/MotionStudio.App.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish
+\`\`\`
+
+GitHub Actions Windows üzerinde otomatik derleyip kurulum gerektirmeyen EXE çıktısını artifact olarak sunar.
 
 ## Proje yapısı
 
-| Proje | Açıklama |
-|---|---|
-| `src/MotionStudio.Core` | Hareket, geçiş ve FFmpeg komutlarının üretimi; FFmpeg'i çalıştırma |
-| `src/MotionStudio.Cli` | Komut satırı aracı (`motionstudio`) |
-| `src/MotionStudio.App` | Windows Forms arayüzü (`TrockiMotionStudio.exe`) |
-| `scripts/smoke-test.sh` | Gerçek FFmpeg ile uçtan uca test |
-| `docs/` | Tanıtım sunumu ve afiş |
+- \`src/MotionStudio.Core\`: FFmpeg hareket, klip birleştirme ve ses miks motorları; proje veri modeli.
+- \`src/MotionStudio.App/ProForm.cs\`: Windows masaüstü düzenleyici.
+- \`src/MotionStudio.App/SpeechService.cs\`: Windows PowerShell / System.Speech ile metinden WAV.
+- \`src/MotionStudio.Cli\`: Eski komut satırı aracı (korunur).
+- \`scripts/smoke-test.sh\`: Eski klip üretim testleri.
 
-## Gereksinimler
+## Bu sürümün sınırları
 
-- .NET 8 SDK
-- FFmpeg (`ffmpeg.exe`): `ffmpeg/` klasörüne koyun ya da PATH'e ekleyin.
-  Windows için: https://www.gyan.dev/ffmpeg/builds/
+- Yerleşik oynatıcı yok; seçili video, Windows varsayılan video oynatıcısında açılır.
+- Hassas bir çok kanallı dalga biçimi zaman çizelgesi, gerçek crossfade, gelişmiş altyazı ve ses efektleri henüz yok.
+- Kesme basitçe **başlangıç + süre** üzerinden yapılır; ses kanalları toplam film süresine hizalanır.
+- Müzik film süresince tekrar eder, seslendirme kısa kalırsa kalan kısım sessizdir.
+- Görselleri projede mutlak dosya yollarından okur; medya taşınırsa proje dosyası yeniden bağlanmalıdır.
 
-## Derleme ve çalıştırma
-
-```bash
-dotnet build TrockiMotionStudio.sln -c Release
-dotnet run --project src/MotionStudio.App
-```
-
-Komut satırı kullanımı:
-
-```bash
-dotnet run --project src/MotionStudio.Cli -- --out video.mp4 --seconds 5 --motion cinematic \
-  --speed slow --aspect 16:9 --fps 30 foto1.jpg foto2.jpg foto3.jpg
-```
-
-Seçenekler: `--aspect 16:9|9:16|1:1`, `--seconds`, `--fps 24|30|60`,
-`--motion none|zoom-in|zoom-out|pan-lr|pan-rl|pan-tb|pan-bt|cinematic`,
-`--speed very-slow|slow|normal|fast`, `--fade on|off`, `--ffmpeg yol`
-
-## Nasıl çalışır
-
-1. Her görsel, seçilen oran ve FPS'te bir MP4 klibe dönüştürülür (`zoompan` filtresi ile hareket).
-2. Fade geçişi açıksa her klibin başına açılma, sonuna kararma uygulanır.
-3. Klipler aynı kodlama ayarlarıyla üretildiği için `concat` ile kayıpsız birleştirilir.
-
-**Hız** hareketin klip içindeki tamamlanma oranını belirler: Çok Yavaş klibin yarısında, Hızlı ise
-klibin üçte ikisinde hareketi bitirir. Yavaş ve çok yavaş seçeneklerde hareket klip sonunda
-tamamlanmaz.
-
-## Test
-
-```bash
-bash scripts/smoke-test.sh
-```
-
-Bu betik gerçek FFmpeg ile sekiz hareket türünü, dikey ve kare oranlarını ve FPS/süre değerlerini kontrol eder.
-
-## Bilinen sınırlamalar
-
-- Görsel kırpılarak doldurulur; bazı oranlarda kadraj kesilebilir (yol haritasındaki "Güvenli Fit + Pan" bunu çözecek).
-- Ses / müzik ekleme henüz yok.
-- Geçiş yalnızca her klip başı ve sonu için fade; klipler arası crossfade yok.
-
-## Yol haritası
-
-1. Güvenli Fit + Pan
-2. Gerçek crossfade
-3. Her görsele ayrı süre ve hareket
-4. Ses / müzik, zaman çizelgesi, proje kaydetme
-5. AI Video: görsel + prompt → hareketli video
-
-Sunum ve afiş: `docs/` klasöründe.
-
-Hazırlayan: TROÇKİ
+**Hazırlayan: TROÇKİ STUDIO**
